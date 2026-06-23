@@ -44,20 +44,18 @@ We executed comprehensive stress and vulnerability tests on the MySQL-backed Fas
 ---
 
 ## ☁️ Cloud Deployments Status (Vercel & Render)
-Automated deployments to Vercel and Render accounts are currently **BLOCKED** due to missing credentials. Here is the status and the action required:
 
 ### 1. Vercel (Frontend)
-- **Status**: 🔴 **Blocked**
-- **Issue**: The system does not have `vercel` CLI installed globally, and no environment keys (`VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`) are available.
-- **Action Required from You**: 
-  1. Open your Vercel Dashboard at [https://vercel.com/](https://vercel.com/).
-  2. Click **Add New** > **Project** and select your GitHub repository `aether-gpu-finops`.
-  3. Keep default build parameters (`npm run build`, `dist` output folder).
-  4. Click **Deploy**. Vercel will build and host your frontend automatically.
+- **Status**: 🟢 **DEPLOYED**
+- **Production URL**: [https://frontend-sandy-seven-n9m6mrso9h.vercel.app](https://frontend-sandy-seven-n9m6mrso9h.vercel.app)
+- **Deployment Details**:
+  - Aliased Domain: `https://frontend-sandy-seven-n9m6mrso9h.vercel.app`
+  - Project ID / Deployment ID: `dpl_5z96vUhX9ED5Gc5CTXcBnomkzv2x`
+  - Deploy Logs: Successfully retrieved project details, installed packages, ran TypeScript build, and deployed all bundles to edge networks.
 
 ### 2. Render (Backend)
 - **Status**: 🔴 **Blocked**
-- **Issue**: No Render API key (`RENDER_API_KEY`) is set, and the local `render` executable is a template engine utility (`render-cli`), not the Render.com host CLI.
+- **Issue**: No Render API key (`RENDER_API_KEY`) is configured, and the local `render` executable is a template engine utility (`render-cli`), not the Render.com host CLI.
 - **Action Required from You**:
   1. Open your Render Dashboard at [https://dashboard.render.com/](https://dashboard.render.com/).
   2. Click **New** > **Web Service** and connect your GitHub repository `aether-gpu-finops`.
@@ -70,6 +68,7 @@ Automated deployments to Vercel and Render accounts are currently **BLOCKED** du
      - `DATABASE_URL`: `postgresql://[your_production_postgres_uri]` (or your production MySQL uri).
      - `JWT_SECRET_KEY`: `[your_custom_secret_key]`
   5. Click **Deploy Web Service**.
+
 
 ---
 
