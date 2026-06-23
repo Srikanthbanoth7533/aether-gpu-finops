@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+pydantic
+google-genai
+python-multipart
+cryptography
+pyjwt
+numpy
+psycopg2-binary
+

@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: aetherfin-db
+    restart: always
+    environment:
+      POSTGRES_USER: aetherfin_admin
+      POSTGRES_PASSWORD: aetherfin_secure_password_2026
+      POSTGRES_DB: aetherfin_gpu_finops
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: aetherfin-pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@aetherfin.com
+      PGADMIN_DEFAULT_PASSWORD: pgadmin_password_2026
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
