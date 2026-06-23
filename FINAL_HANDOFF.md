@@ -72,8 +72,17 @@ We executed comprehensive stress and vulnerability tests on the MySQL-backed Fas
 
 ---
 
-## 📦 Recruiter Portfolio Assets
+## 📦 Recruiter Portfolio Assets & Stats
 The following recruiter-ready documents have been added to the root repository to maximize showcase appeal:
 1. **[recruiter_case_study.md](file:///c:/Users/DELL/.gemini/antigravity-ide/scratch/aether-gpu-finops/recruiter_case_study.md)**: Standard consulting case study documenting GICP, MCES, SLA-VEI, and COROI.
 2. **[architecture_diagram.md](file:///c:/Users/DELL/.gemini/antigravity-ide/scratch/aether-gpu-finops/architecture_diagram.md)**: Diagram of the frontend, REST APIs, and database layer.
-3. **[aetherfin_presentation.pdf](file:///c:/Users/DELL/.gemini/antigravity-ide/scratch/aether-gpu-finops/aetherfin_presentation.pdf)**: Slide presentation deck ready to show to recruiters.
+3. **[aetherfin_presentation.pptx](file:///c:/Users/DELL/.gemini/antigravity-ide/scratch/aether-gpu-finops/aetherfin_presentation.pptx)**: 25-slide PowerPoint deck ready to present.
+4. **[aetherfin_presentation.pdf](file:///c:/Users/DELL/.gemini/antigravity-ide/scratch/aether-gpu-finops/aetherfin_presentation.pdf)**: Slide presentation deck converted to PDF.
+
+### Portfolio Asset Telemetry:
+* **Number of Slides**: `25` slides
+* **PowerPoint File Size**: `61.6 KB`
+* **PDF File Size**: `151.5 KB`
+* **Screenshot Count**: `7` png/webp screens in [screenshots/](file:///c:/Users/DELL/.gemini/antigravity-ide/scratch/aether-gpu-finops/screenshots)
+* **Diagram Count**: `1` system architecture diagram in [architecture_diagram.md](file:///c:/Users/DELL/.gemini/antigravity-ide/scratch/aether-gpu-finops/architecture_diagram.md)
+
