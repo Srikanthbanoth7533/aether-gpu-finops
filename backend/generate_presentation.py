@@ -68,6 +68,46 @@ def add_slide_body(slide, bullet_points):
             run.font.size = Pt(18)
             run.font.color.rgb = TEXT_MAIN
 
+def add_slide_body_with_image(slide, bullet_points, image_path):
+    # Left column: Text (narrower width to accommodate the image)
+    txBox = slide.shapes.add_textbox(Inches(0.5), Inches(1.4), Inches(4.5), Inches(3.8))
+    tf = txBox.text_frame
+    tf.word_wrap = True
+    tf.margin_left = tf.margin_top = tf.margin_right = tf.margin_bottom = 0
+    
+    for i, bp in enumerate(bullet_points):
+        p = tf.add_paragraph() if i > 0 else tf.paragraphs[0]
+        p.space_after = Pt(10)
+        
+        # Split on first colon to bold the title
+        if ":" in bp:
+            title, desc = bp.split(":", 1)
+            run_title = p.add_run()
+            run_title.text = title + ":"
+            run_title.font.name = 'Arial'
+            run_title.font.size = Pt(13)
+            run_title.font.bold = True
+            run_title.font.color.rgb = TEXT_MAIN
+            
+            run_desc = p.add_run()
+            run_desc.text = desc
+            run_desc.font.name = 'Arial'
+            run_desc.font.size = Pt(13)
+            run_desc.font.color.rgb = TEXT_MUTED
+        else:
+            run = p.add_run()
+            run.text = bp
+            run.font.name = 'Arial'
+            run.font.size = Pt(13)
+            run.font.color.rgb = TEXT_MAIN
+            
+    # Right column: Image
+    if os.path.exists(image_path):
+        # Position image on the right side
+        slide.shapes.add_picture(image_path, Inches(5.2), Inches(1.4), width=Inches(4.3))
+    else:
+        print(f"WARNING: Image not found at {os.path.abspath(image_path)}")
+
 def create_presentation():
     prs = pptx.Presentation()
     prs.slide_width = Inches(10)
@@ -84,6 +124,7 @@ def create_presentation():
     tf.word_wrap = True
     
     p1 = tf.paragraphs[0]
+    p1.text = "AETHERFIN GPU OPA"
     p1.text = "AETHERFIN GPU OPS"
     p1.font.name = 'Arial'
     p1.font.size = Pt(48)
@@ -138,7 +179,7 @@ def create_presentation():
     set_slide_background(slide)
     add_slide_title(slide, "Business Context")
     add_slide_body(slide, [
-        "Financial Leakage: Up to 60% of GPU compute budgets are wasted on idle allocations.",
+        "Financial Leakage: Over 60% of GPU compute budgets are wasted on idle allocations.",
         "Regulatory Compliance: Imminent Scope 3 environmental carbon footprint audits are legally required in global jurisdictions.",
         "The Green IT Opportunity: Optimizing compute sizing and regional scheduling yields double benefits: lowering spend and carbon footprint.",
         "Stakeholder Alignment: Designed to support Chief Financial Officers (CFOs), VP of Engineering, AI Product Managers, and Sustainability Officers."
@@ -264,56 +305,56 @@ def create_presentation():
     ])
 
     # -------------------------------------------------------------------------
-    # Slide 14: Dashboard Screenshots
+    # Slide 14: Dashboard Screenshots [WITH IMAGE]
     # -------------------------------------------------------------------------
     slide = prs.slides.add_slide(blank_layout)
     set_slide_background(slide)
     add_slide_title(slide, "Executive & Dashboard Previews")
-    add_slide_body(slide, [
-        "Dashboard Interface (sizing.png): KPI overview widgets, active node grid, and 48-hour utilization timelines.",
-        "Outlier Analytics (anomalies.png): Z-score outlier graphs detailing historical server spikes.",
-        "KPI Drilldowns (drilldown.png): Sliding sidebar panels displaying node-level cost allocations.",
-        "Security & Auditing Portal (admin_logs.png): Immutable transaction log tables displaying JWT user activity."
-    ])
+    add_slide_body_with_image(slide, [
+        "Dashboard (sizing.png): Features the high-level KPI overview panels showing spend and carbon footprint details.",
+        "Compute Activity: Renders the active 48-hour timeline detailing node utilization and load fluctuations.",
+        "Node Inventory: Renders active database logs of multi-cloud allocations.",
+        "One-Click Exports: Stream summaries and audit trails directly to CSV or formatted text reports."
+    ], "../screenshots/sizing.png")
 
     # -------------------------------------------------------------------------
-    # Slide 15: Trend Analysis
+    # Slide 15: Trend Analysis [WITH IMAGE]
     # -------------------------------------------------------------------------
     slide = prs.slides.add_slide(blank_layout)
     set_slide_background(slide)
     add_slide_title(slide, "Trend & Cohort Analytics")
-    add_slide_body(slide, [
+    add_slide_body_with_image(slide, [
+        "Interactive Sidebar (drilldown.png): Opens node-level financial details dynamically on click.",
+        "Visual Sizing Factors: CFOs can drill down to see exact provider and regional billing components.",
         "Multi-Range Filters: Supports 7-day, 30-day, and custom timeline aggregation windows.",
-        "Diurnal Load Profiles: Identifies node demand spikes (peak hours 9 AM - 6 PM) to plan scheduling.",
-        "Cohort Analysis: Compares model execution profiles to pinpoint underperforming instances.",
-        "Green Savings Tracking: Measures GICP improvements and emission reductions post-optimization."
-    ])
+        "Cohort Analysis: Compares model execution profiles to pinpoint underperforming instances."
+    ], "../screenshots/drilldown.png")
 
     # -------------------------------------------------------------------------
-    # Slide 16: Anomaly Detection
+    # Slide 16: Anomaly Detection [WITH IMAGE]
     # -------------------------------------------------------------------------
     slide = prs.slides.add_slide(blank_layout)
     set_slide_background(slide)
     add_slide_title(slide, "Z-Score Anomaly Detection")
-    add_slide_body(slide, [
-        "Dynamic Baselines: Avoids static thresholds by computing sliding-window mean and standard deviations.",
-        "Latency Spikes: Flags transactions exceeding a Z-score of 2.2 as high severity spikes.",
-        "Idle Waste Warnings: Triggers alerts for nodes running under 10% average load for 12+ consecutive hours.",
-        "Root Cause Diagnostics: Automatically pairs anomalies with technical diagnoses and routing solutions."
-    ])
+    add_slide_body_with_image(slide, [
+        "Outliers Graph (anomalies.png): Renders Z-score statistical outlier plots tracking latency spikes.",
+        "Waste Alerts: Automatically flags nodes operating under 10% average load for 12+ consecutive hours.",
+        "Root Cause Diagnostics: Automatically pairs anomalies with technical diagnoses and routing solutions.",
+        "Dynamic Baselines: Avoids static thresholds by computing sliding-window mean and standard deviations."
+    ], "../screenshots/anomalies.png")
 
     # -------------------------------------------------------------------------
-    # Slide 17: AI Advisor
+    # Slide 17: AI Advisor [WITH IMAGE]
     # -------------------------------------------------------------------------
     slide = prs.slides.add_slide(blank_layout)
     set_slide_background(slide)
     add_slide_title(slide, "AI FinOps Advisor")
-    add_slide_body(slide, [
-        "Context Integration: Feeds active cluster costs, idle penalties, and carbon metrics directly to the LLM context.",
-        "Natural Language Interface: Answering queries like 'How can I reduce costs by 20%?' or 'Which nodes are underperforming?'.",
-        "Actionable Recommendations: Provides consulting-grade suggestions detailing weekly cost savings.",
-        "Technical Fallback Rules: Rule-based fallback executes on the database if the LLM API is offline."
-    ])
+    add_slide_body_with_image(slide, [
+        "Conversational Interface (casestudy.png): Provides context-enriched advisory panels displaying strategic plans.",
+        "Direct Answers: Responds to inquiries like 'How can I reduce costs by 20%?' with detailed, multi-step actions.",
+        "Fallback Rules: Implements rule-based fallback logic to analyze local database statistics if the LLM API is offline.",
+        "Action Chips: Interactive cards allowing users to click common queries instantly."
+    ], "../screenshots/casestudy.png")
 
     # -------------------------------------------------------------------------
     # Slide 18: What-If Simulator
@@ -342,17 +383,17 @@ def create_presentation():
     ])
 
     # -------------------------------------------------------------------------
-    # Slide 20: Security Validation
+    # Slide 20: Security Validation [WITH IMAGE]
     # -------------------------------------------------------------------------
     slide = prs.slides.add_slide(blank_layout)
     set_slide_background(slide)
     add_slide_title(slide, "Security & Compliance Audits")
-    add_slide_body(slide, [
+    add_slide_body_with_image(slide, [
+        "Audit Log Viewer (admin_logs.png): Renders secure table logging details of all system modifications.",
         "Access Protection: Bearer JWT validation shields all secure API routes and telemetry reports.",
         "Type Safety Validation: Pydantic schemas filter and reject malformed JSON payloads (HTTP 422).",
-        "SQL Injection Prevention: Parameterized queries in SQLAlchemy ORM eliminate injection vectors.",
-        "CORS Access Controls: Restricted origins block unauthorized external domains from querying backend API endpoints."
-    ])
+        "SQL Injection Prevention: Parameterized queries in SQLAlchemy ORM eliminate injection vectors."
+    ], "../screenshots/admin_logs.png")
 
     # -------------------------------------------------------------------------
     # Slide 21: Business Impact
@@ -407,17 +448,17 @@ def create_presentation():
     ])
 
     # -------------------------------------------------------------------------
-    # Slide 25: Conclusion
+    # Slide 25: Conclusion [WITH IMAGE]
     # -------------------------------------------------------------------------
     slide = prs.slides.add_slide(blank_layout)
     set_slide_background(slide)
     add_slide_title(slide, "Conclusion")
-    add_slide_body(slide, [
+    add_slide_body_with_image(slide, [
         "Recruiter-Ready Platform: Successfully bridges GenAI compute operations, financial auditing, and carbon ESG metrics.",
-        "Sophisticated Calculations: Implements custom formulas (GICP, MCES, SLA-VEI, COROI) on local telemetry.",
+        "Designed UI (login.png): Offers secure credentials authentication layout using Zinc dark themes.",
         "Production-Grade Performance: Validated at 1,000 requests concurrency under 100% success rates.",
         "Advanced Competency: Demonstrates full capability in Product Analytics, Data Engineering, and Security."
-    ])
+    ], "../screenshots/login.png")
 
     output_path = "../aetherfin_presentation.pptx"
     prs.save(output_path)

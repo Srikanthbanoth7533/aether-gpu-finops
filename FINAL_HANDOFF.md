@@ -81,8 +81,9 @@ The following recruiter-ready documents have been added to the root repository t
 
 ### Portfolio Asset Telemetry:
 * **Number of Slides**: `25` slides
-* **PowerPoint File Size**: `61.6 KB`
-* **PDF File Size**: `151.5 KB`
+* **PowerPoint File Size**: `1.27 MB`
+* **PDF File Size**: `739.4 KB`
 * **Screenshot Count**: `7` png/webp screens in [screenshots/](file:///c:/Users/DELL/.gemini/antigravity-ide/scratch/aether-gpu-finops/screenshots)
 * **Diagram Count**: `1` system architecture diagram in [architecture_diagram.md](file:///c:/Users/DELL/.gemini/antigravity-ide/scratch/aether-gpu-finops/architecture_diagram.md)
+
 
