@@ -148,9 +148,13 @@ def get_kpi_overview(db: Session = Depends(get_db)):
 
     gicp_pct = (idle_logs_cost / total_spend * 100.0) if total_spend > 0 else 0.0
 
-    total_tokens = db.query(func.sum(InferenceRequestLog.prompt_tokens + InferenceRequestLog.completion_tokens)).scalar() or 0
-    total_watts_sum = db.query(func.sum(GPUUtilizationLog.power_draw_watts)).scalar() or 0.0
-    avg_mces = (total_tokens / total_watts_sum) if total_watts_sum > 0 else 0.0
+    raw_tokens = db.query(func.sum(InferenceRequestLog.prompt_tokens + InferenceRequestLog.completion_tokens)).scalar()
+    total_tokens = float(raw_tokens) if raw_tokens is not None else 0.0
+    
+    raw_watts = db.query(func.sum(GPUUtilizationLog.power_draw_watts)).scalar()
+    total_watts_sum = float(raw_watts) if raw_watts is not None else 0.0
+    
+    avg_mces = (total_tokens / total_watts_sum) if total_watts_sum > 0.0 else 0.0
 
     total_requests = db.query(InferenceRequestLog).count()
     sla_violations = db.query(InferenceRequestLog).filter(InferenceRequestLog.sla_violation == True).all()
@@ -168,8 +172,10 @@ def get_kpi_overview(db: Session = Depends(get_db)):
 
     sla_vei = (severity_sum / total_requests * 100.0) if total_requests > 0 else 0.0
 
-    total_carbon_g = db.query(func.sum(CarbonEmissionsLog.carbon_emitted_grams)).scalar() or 0.0
+    raw_carbon = db.query(func.sum(CarbonEmissionsLog.carbon_emitted_grams)).scalar()
+    total_carbon_g = float(raw_carbon) if raw_carbon is not None else 0.0
     total_carbon_kg = total_carbon_g / 1000.0
+
 
     carbon_per_k_spend = (total_carbon_kg / (total_spend / 1000.0)) if total_spend > 0 else 0.0
     carbon_offset_roi = max(0.0, min(100.0, 100.0 - (carbon_per_k_spend * 0.05)))
@@ -234,18 +240,20 @@ def get_model_efficiency(db: Session = Depends(get_db)):
         ).count()
         sla_pct = (sla_violations / total_reqs * 100.0) if total_reqs > 0 else 0.0
 
-        total_tokens = db.query(func.sum(InferenceRequestLog.prompt_tokens + InferenceRequestLog.completion_tokens)).filter(
+        raw_tokens = db.query(func.sum(InferenceRequestLog.prompt_tokens + InferenceRequestLog.completion_tokens)).filter(
             InferenceRequestLog.model_id == dep.id
-        ).scalar() or 0
+        ).scalar()
+        total_tokens = float(raw_tokens) if raw_tokens is not None else 0.0
         
-        total_power = db.query(func.sum(GPUUtilizationLog.power_draw_watts)).filter(
+        raw_power = db.query(func.sum(GPUUtilizationLog.power_draw_watts)).filter(
             GPUUtilizationLog.node_id == node.id
-        ).scalar() or 0.0
+        ).scalar()
+        total_power = float(raw_power) if raw_power is not None else 0.0
 
         model_power_fraction = (dep.gpu_allocated / node.gpu_count) if node.gpu_count > 0 else 1.0
         total_model_power_wh = total_power * model_power_fraction
 
-        tokens_per_wh = (total_tokens / total_model_power_wh) if total_model_power_wh > 0 else 0.0
+        tokens_per_wh = (total_tokens / total_model_power_wh) if total_model_power_wh > 0.0 else 0.0
 
         results.append(ModelEfficiencyDataPoint(
             model_id=dep.id,
@@ -273,13 +281,15 @@ def get_provider_metrics(db: Session = Depends(get_db)):
             log_count = db.query(GPUUtilizationLog).filter(GPUUtilizationLog.node_id == node.id).count()
             total_spend += log_count * node.hourly_cost
 
-        total_carbon_g = db.query(func.sum(CarbonEmissionsLog.carbon_emitted_grams)).filter(
+        raw_carbon = db.query(func.sum(CarbonEmissionsLog.carbon_emitted_grams)).filter(
             CarbonEmissionsLog.node_id.in_(node_ids)
-        ).scalar() or 0.0
+        ).scalar()
+        total_carbon_g = float(raw_carbon) if raw_carbon is not None else 0.0
 
-        avg_util = db.query(func.avg(GPUUtilizationLog.gpu_utilization_pct)).filter(
+        raw_avg_util = db.query(func.avg(GPUUtilizationLog.gpu_utilization_pct)).filter(
             GPUUtilizationLog.node_id.in_(node_ids)
-        ).scalar() or 0.0
+        ).scalar()
+        avg_util = float(raw_avg_util) if raw_avg_util is not None else 0.0
 
         results.append(ProviderMetrics(
             provider=prov,
@@ -399,6 +409,7 @@ def get_exported_report(
 def get_ai_advisor_response(request: ChatRequest, db: Session = Depends(get_db)):
     nodes = db.query(GPUClusterNode).all()
     deployments = db.query(ModelDeployment).all()
+    dirty_node = db.query(GPUClusterNode).filter(GPUClusterNode.id == "onprem-coal-heavy-01").first()
     
     total_spend = 0.0
     idle_spend = 0.0
@@ -416,9 +427,10 @@ def get_ai_advisor_response(request: ChatRequest, db: Session = Depends(get_db))
         node_idle_spend = idle_hours * n.hourly_cost
         idle_spend += node_idle_spend
         
-        avg_util = db.query(func.avg(GPUUtilizationLog.gpu_utilization_pct)).filter(
+        raw_avg_util = db.query(func.avg(GPUUtilizationLog.gpu_utilization_pct)).filter(
             GPUUtilizationLog.node_id == n.id
-        ).scalar() or 0.0
+        ).scalar()
+        avg_util = float(raw_avg_util) if raw_avg_util is not None else 0.0
         
         if avg_util < 25.0:
             underutilized_nodes.append({
