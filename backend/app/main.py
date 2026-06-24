@@ -46,11 +46,19 @@ app.add_middleware(
 # JWT Authentication helpers
 security = HTTPBearer(auto_error=False)
 
-def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)):
-    if not credentials:
+def get_current_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security),
+    token: Optional[str] = Query(None)
+):
+    actual_token = None
+    if credentials:
+        actual_token = credentials.credentials
+    elif token:
+        actual_token = token
+        
+    if not actual_token:
         raise HTTPException(status_code=401, detail="Authentication credentials missing")
-    token = credentials.credentials
-    payload = decode_access_token(token)
+    payload = decode_access_token(actual_token)
     if not payload:
         raise HTTPException(status_code=401, detail="Invalid or expired access token")
     return payload

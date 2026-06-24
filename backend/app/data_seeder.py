@@ -9,6 +9,7 @@ from .models import (
 from .utils.auth import hash_password
 
 def seed_data():
+    random.seed(42)
     db = SessionLocal()
     try:
         # Clear existing tables
