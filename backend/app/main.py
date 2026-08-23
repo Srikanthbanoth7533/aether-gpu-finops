@@ -44,11 +44,11 @@ def _init_db_background():
 def startup_event():
     threading.Thread(target=_init_db_background, daemon=True).start()
 
-# CORS middleware for frontend communication
+# CORS middleware for frontend communication across Vercel deployments
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
