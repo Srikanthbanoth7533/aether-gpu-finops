@@ -9,6 +9,8 @@ from sqlalchemy.pool import NullPool
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./aether_gpu_finops.db")
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 
 if DATABASE_URL.startswith("sqlite"):
