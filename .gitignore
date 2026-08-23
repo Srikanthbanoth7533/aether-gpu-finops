@@ -14,8 +14,9 @@ dist/
 backend/.venv/
 backend/__pycache__/
 backend/**/*.pyc
-backend/*.db
 backend/*.db-journal
+!aether_gpu_finops.db
+!backend/aether_gpu_finops.db
 
 
 # IDE configurations
