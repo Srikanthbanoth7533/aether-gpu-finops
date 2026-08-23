@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://aetherfin-gpu-ops-backend.onrender.com/api/:path*"
+    }
+  ]
+}
