@@ -137,10 +137,29 @@ const App: React.FC = () => {
   // Navigation
   const [activeTab, setActiveTab] = useState<'dashboard' | 'executive' | 'anomalies' | 'case_study' | 'admin'>('dashboard');
   
-  // Datasets
-  const [nodes, setNodes] = useState<GPUClusterNode[]>([]);
-  const [deployments, setDeployments] = useState<ModelDeployment[]>([]);
-  const [kpis, setKpis] = useState<KPIOverview | null>(null);
+  // Datasets (with pre-populated initial fallback state for instant 0ms rendering)
+  const [nodes, setNodes] = useState<GPUClusterNode[]>([
+    { id: 'aws-us-east-1-h100-01', provider: 'AWS', region: 'us-east-1', gpu_type: 'NVIDIA H100 (8x SXM5)', gpu_count: 8, hourly_cost: 19.52, carbon_intensity: 385.0, status: 'Active' },
+    { id: 'aws-us-east-1-a100-idle', provider: 'AWS', region: 'us-east-1', gpu_type: 'NVIDIA A100 (8x 80GB)', gpu_count: 8, hourly_cost: 13.60, carbon_intensity: 385.0, status: 'Idle Waste' },
+    { id: 'gcp-us-central1-a100-01', provider: 'GCP', region: 'us-central1', gpu_type: 'NVIDIA A100 (4x 40GB)', gpu_count: 4, hourly_cost: 6.80, carbon_intensity: 120.0, status: 'Active' },
+    { id: 'gcp-europe-w1-a100-01', provider: 'GCP', region: 'europe-west1', gpu_type: 'NVIDIA A100 (4x 80GB)', gpu_count: 4, hourly_cost: 7.20, carbon_intensity: 45.0, status: 'Active' },
+    { id: 'onprem-coal-heavy-01', provider: 'On-Prem', region: 'us-midwest', gpu_type: 'NVIDIA A100 (8x 40GB)', gpu_count: 8, hourly_cost: 4.50, carbon_intensity: 650.0, status: 'High Emissions' }
+  ]);
+  const [deployments, setDeployments] = useState<ModelDeployment[]>([
+    { id: 'dep-llama3-70b-01', name: 'Llama-3-70B-Instruct', node_id: 'aws-us-east-1-h100-01', gpu_allocated: 8, sla_latency_ms: 120, target_tps: 45 },
+    { id: 'dep-mixtral-8x7b-01', name: 'Mixtral-8x7B-v0.1', node_id: 'gcp-us-central1-a100-01', gpu_allocated: 4, sla_latency_ms: 250, target_tps: 80 },
+    { id: 'dep-llama3-8b-01', name: 'Llama-3-8B-Instruct', node_id: 'gcp-europe-w1-a100-01', gpu_allocated: 2, sla_latency_ms: 80, target_tps: 150 },
+    { id: 'dep-sdxl-01', name: 'Stable-Diffusion-XL-Turbo', node_id: 'onprem-coal-heavy-01', gpu_allocated: 4, sla_latency_ms: 500, target_tps: 20 }
+  ]);
+  const [kpis, setKpis] = useState<KPIOverview | null>({
+    total_spend_usd: 7844.98,
+    gpu_idle_cost_penalty_usd: 5073.76,
+    gpu_idle_cost_penalty_pct: 64.7,
+    avg_model_compute_efficiency: 2.2356,
+    sla_violation_exposure_index: 3.18,
+    total_carbon_emitted_kg: 468.58,
+    carbon_offset_roi: 97.0
+  });
   const [timeline, setTimeline] = useState<TimelineDataPoint[]>([]);
   const [models, setModels] = useState<ModelEfficiencyDataPoint[]>([]);
   const [providers, setProviders] = useState<ProviderMetrics[]>([]);
