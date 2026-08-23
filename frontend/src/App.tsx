@@ -114,6 +114,25 @@ interface UserActivityLog {
   ip_address: string;
 }
 
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'https://aetherfin-gpu-ops-backend.onrender.com').replace(/\/$/, '');
+
+const apiFetch = async (path: string, options: RequestInit = {}) => {
+  const cleanPath = path.startsWith('/') ? path : '/' + path;
+  const primaryUrl = `${API_BASE_URL}${cleanPath}`;
+  try {
+    const res = await fetch(primaryUrl, options);
+    if (res.ok) return await res.json();
+    console.warn(`Primary fetch ${primaryUrl} returned status: ${res.status}`);
+  } catch (e) {
+    console.warn(`Primary fetch to ${primaryUrl} failed, trying relative path...`, e);
+  }
+  try {
+    const relRes = await fetch(cleanPath, options);
+    if (relRes.ok) return await relRes.json();
+  } catch (_) {}
+  return null;
+};
+
 const App: React.FC = () => {
   // Navigation
   const [activeTab, setActiveTab] = useState<'dashboard' | 'executive' | 'anomalies' | 'case_study' | 'admin'>('dashboard');
@@ -174,22 +193,22 @@ Click one of the quick options below, or type your own inquiry.`,
     try {
       setLoading(true);
       const [nodesRes, depRes, kpiRes, timelineRes, modelsRes, provRes] = await Promise.all([
-        fetch('/api/nodes').then(r => r.json()),
-        fetch('/api/deployments').then(r => r.json()),
-        fetch('/api/kpi-overview').then(r => r.json()),
-        fetch('/api/charts/timeline').then(r => r.json()),
-        fetch('/api/charts/models').then(r => r.json()),
-        fetch('/api/charts/providers').then(r => r.json())
+        apiFetch('/api/nodes'),
+        apiFetch('/api/deployments'),
+        apiFetch('/api/kpi-overview'),
+        apiFetch('/api/charts/timeline'),
+        apiFetch('/api/charts/models'),
+        apiFetch('/api/charts/providers')
       ]);
 
-      setNodes(nodesRes);
-      setDeployments(depRes);
-      setKpis(kpiRes);
-      setTimeline(timelineRes);
-      setModels(modelsRes);
-      setProviders(provRes);
+      if (nodesRes) setNodes(nodesRes);
+      if (depRes) setDeployments(depRes);
+      if (kpiRes) setKpis(kpiRes);
+      if (timelineRes) setTimeline(timelineRes);
+      if (modelsRes) setModels(modelsRes);
+      if (provRes) setProviders(provRes);
       
-      if (nodesRes.length > 0) {
+      if (nodesRes && nodesRes.length > 0) {
         setSelectedNode(nodesRes[0].id);
       }
     } catch (e) {
@@ -205,15 +224,15 @@ Click one of the quick options below, or type your own inquiry.`,
     try {
       const headers = { 'Authorization': `Bearer ${token}` };
       
-      const recsRes = await fetch('/api/recommendations', { headers }).then(r => r.ok ? r.json() : []);
-      setRecommendations(recsRes);
+      const recsRes = await apiFetch('/api/recommendations', { headers });
+      if (recsRes) setRecommendations(recsRes);
 
-      const anomsRes = await fetch('/api/anomalies', { headers }).then(r => r.ok ? r.json() : []);
-      setAnomalies(anomsRes);
+      const anomsRes = await apiFetch('/api/anomalies', { headers });
+      if (anomsRes) setAnomalies(anomsRes);
 
       if (userRole === 'Admin') {
-        const logsRes = await fetch('/api/admin/activity-logs', { headers }).then(r => r.ok ? r.json() : []);
-        setActivityLogs(logsRes);
+        const logsRes = await apiFetch('/api/admin/activity-logs', { headers });
+        if (logsRes) setActivityLogs(logsRes);
       }
     } catch (e) {
       console.error("Error loading secured metrics:", e);
@@ -244,7 +263,7 @@ Click one of the quick options below, or type your own inquiry.`,
   const triggerSimulation = async () => {
     setSimulating(true);
     try {
-      const res = await fetch('/api/simulator', {
+      const data = await apiFetch('/api/simulator', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -255,8 +274,7 @@ Click one of the quick options below, or type your own inquiry.`,
           routing_strategy: routingStrategy
         })
       });
-      const data = await res.json();
-      setSimResult(data);
+      if (data) setSimResult(data);
     } catch (e) {
       console.error("Simulation failed:", e);
     } finally {
@@ -274,15 +292,14 @@ Click one of the quick options below, or type your own inquiry.`,
       : { email: authEmail, password: authPassword };
 
     try {
-      const res = await fetch(path, {
+      const data = await apiFetch(path, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       });
       
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.detail || "Authentication failed");
+      if (!data) {
+        throw new Error("Authentication failed - Server response invalid");
       }
 
       if (isRegister) {
@@ -321,17 +338,18 @@ Click one of the quick options below, or type your own inquiry.`,
     setChatHistory(prev => [...prev, { sender: 'user', text: messageText }]);
 
     try {
-      const res = await fetch('/api/chat-advisor', {
+      const data = await apiFetch('/api/chat-advisor', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: messageText })
       });
-      const data = await res.json();
-      setChatHistory(prev => [...prev, { 
-        sender: 'ai', 
-        text: data.response, 
-        suggested_actions: data.suggested_actions 
-      }]);
+      if (data) {
+        setChatHistory(prev => [...prev, { 
+          sender: 'ai', 
+          text: data.response, 
+          suggested_actions: data.suggested_actions 
+        }]);
+      }
     } catch (e) {
       setChatHistory(prev => [...prev, { sender: 'ai', text: "**Error communicating with advisor.**" }]);
     } finally {
@@ -346,7 +364,7 @@ Click one of the quick options below, or type your own inquiry.`,
       setActiveTab('admin');
       return;
     }
-    window.open(`/api/reports/export?dataset=${dataset}&format=${format}&token=${token}`);
+    window.open(`${API_BASE_URL}/api/reports/export?dataset=${dataset}&format=${format}&token=${token}`);
   };
 
   // Charts
