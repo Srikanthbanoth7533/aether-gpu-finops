@@ -8,7 +8,7 @@ from sqlalchemy import func
 from typing import List, Dict, Optional
 import datetime
 
-from .database import get_db, engine, Base
+from .database import get_db, SessionLocal, engine, Base
 from .models import (
     GPUClusterNode, ModelDeployment, GPUUtilizationLog, 
     InferenceRequestLog, CarbonEmissionsLog, User, UserActivityLog
@@ -24,15 +24,18 @@ from .services.anomalies import detect_anomalies
 from .services.recommendations import generate_recommendations
 from .services.exports import export_to_csv, generate_executive_text_report
 
-# Ensure tables are created and seeded if database is empty
-Base.metadata.create_all(bind=engine)
-db_session = next(get_db())
-# Check if we have data, otherwise seed
-if db_session.query(GPUClusterNode).count() == 0:
-    seed_data()
-db_session.close()
-
 app = FastAPI(title="AetherFin GPU Ops: GenAI FinOps & Carbon Sustainability Platform")
+
+@app.on_event("startup")
+def startup_event():
+    try:
+        Base.metadata.create_all(bind=engine)
+        db = SessionLocal()
+        if db.query(GPUClusterNode).count() == 0:
+            seed_data()
+        db.close()
+    except Exception as e:
+        print(f"Startup DB init error: {e}")
 
 # CORS middleware for frontend communication
 app.add_middleware(
