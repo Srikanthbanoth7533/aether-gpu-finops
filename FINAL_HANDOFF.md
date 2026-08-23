@@ -6,7 +6,7 @@ This document lists all system deliverables, repository links, database migratio
 
 ## 🔗 Deliverable Links & Repository Details
 * **GitHub Repository URL**: [https://github.com/Srikanthbanoth7533/aether-gpu-finops.git](https://github.com/Srikanthbanoth7533/aether-gpu-finops.git)
-* **Latest Commit Hash**: `7bc7c92d772104bc1986c387871500dadc6138dd`
+* **Latest Commit Hash**: `595ab0779bd7321ba2e2b3f0853fd23c54db74b4`
 * **Presentation Deliverables**:
   - PowerPoint Version: [aetherfin_presentation.pptx](file:///c:/Users/DELL/.gemini/antigravity-ide/scratch/aether-gpu-finops/aetherfin_presentation.pptx)
   - PDF Version: [aetherfin_presentation.pdf](file:///c:/Users/DELL/.gemini/antigravity-ide/scratch/aether-gpu-finops/aetherfin_presentation.pdf)
