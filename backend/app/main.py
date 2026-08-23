@@ -53,6 +53,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def root_health_check():
+    return {
+        "status": "healthy",
+        "service": "AetherFin GPU Ops API",
+        "timestamp": datetime.datetime.utcnow().isoformat()
+    }
+
 # JWT Authentication helpers
 security = HTTPBearer(auto_error=False)
 

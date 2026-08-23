@@ -20,7 +20,8 @@ if DATABASE_URL.startswith("sqlite"):
     }
 else:
     engine_args = {
-        "pool_pre_ping": True
+        "pool_pre_ping": True,
+        "connect_args": {"connect_timeout": 10}
     }
 
 engine = create_engine(DATABASE_URL, **engine_args)
