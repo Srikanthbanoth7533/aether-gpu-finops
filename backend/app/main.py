@@ -27,22 +27,7 @@ from .services.exports import export_to_csv, generate_executive_text_report
 
 app = FastAPI(title="AetherFin GPU Ops: GenAI FinOps & Carbon Sustainability Platform")
 
-def _init_db_background():
-    try:
-        print("Starting background DB initialization...")
-        Base.metadata.create_all(bind=engine)
-        db = SessionLocal()
-        if db.query(GPUClusterNode).count() == 0:
-            print("Seeding cluster data...")
-            seed_data()
-        db.close()
-        print("Background DB initialization complete!")
-    except Exception as e:
-        print(f"Startup DB init warning: {e}")
-
-@app.on_event("startup")
-def startup_event():
-    threading.Thread(target=_init_db_background, daemon=True).start()
+# Pre-seeded database is ready for zero-latency queries
 
 # CORS middleware for frontend communication across Vercel deployments
 app.add_middleware(

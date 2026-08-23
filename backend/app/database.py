@@ -21,7 +21,7 @@ if not os.path.exists(db_path):
 DATABASE_URL = f"sqlite:///{db_path}"
 
 engine_args = {
-    "connect_args": {"check_same_thread": False},
+    "connect_args": {"check_same_thread": False, "timeout": 30},
     "poolclass": NullPool
 }
 
