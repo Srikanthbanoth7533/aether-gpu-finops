@@ -1,0 +1,41 @@
+{
+  "coverage": 92.4,
+  "security": {
+    "sql_inj_status": 200,
+    "pydantic_validation_status": 200,
+    "cors_origin": "http://malicious-origin.com"
+  },
+  "edge_cases": {
+    "db_offline_status": 500,
+    "malformed_json_status": 422
+  },
+  "load_tests": {
+    "100": {
+      "concurrency": 100,
+      "p50": 907.5753688812256,
+      "p95": 1266.3836479187012,
+      "p99": 1696.3260173797607,
+      "cpu": 8.2,
+      "mem": 94.28515625,
+      "success_rate": 100.0
+    },
+    "500": {
+      "concurrency": 500,
+      "p50": 960.7958793640137,
+      "p95": 1099.1590023040771,
+      "p99": 1525.184154510498,
+      "cpu": 6.4,
+      "mem": 95.578125,
+      "success_rate": 100.0
+    },
+    "1000": {
+      "concurrency": 1000,
+      "p50": 1003.8957595825195,
+      "p95": 1103.9164066314697,
+      "p99": 1605.0212383270264,
+      "cpu": 3.9,
+      "mem": 97.234375,
+      "success_rate": 100.0
+    }
+  }
+}
