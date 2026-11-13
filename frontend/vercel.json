@@ -1,11 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://aetherfin-gpu-ops-backend.onrender.com/api/$1"
+      "source": "/api/:match*",
+      "destination": "https://aetherfin-gpu-ops-backend.onrender.com/api/:match*"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]

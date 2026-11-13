@@ -31,3 +31,4 @@ while ($true) {
     Write-Host "Sleeping 10 minutes until next probe..." -ForegroundColor DarkGray
     Start-Sleep -Seconds 600
 }
+
