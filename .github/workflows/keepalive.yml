@@ -1,0 +1,42 @@
+name: 24-7 Keep-Alive & Uptime Pinger
+
+on:
+  schedule:
+    # Trigger every 10 minutes to prevent Render free-tier hibernation (which occurs after 15 min)
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+  push:
+    branches:
+      - master
+
+jobs:
+  ping-services:
+    name: Ping Backend & Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render Backend Root
+        run: |
+          echo "Probing Render Backend Root..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 https://aetherfin-gpu-ops-backend.onrender.com/)
+          echo "Render Backend Root Status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "Warning: Expected 200, got $HTTP_STATUS"
+          fi
+
+      - name: Ping Render Backend Database & API Nodes
+        run: |
+          echo "Probing Render Database API Nodes..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 https://aetherfin-gpu-ops-backend.onrender.com/api/nodes)
+          echo "Render API Nodes Status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "Warning: Expected 200, got $HTTP_STATUS"
+          fi
+
+      - name: Ping Vercel Frontend
+        run: |
+          echo "Probing Vercel Frontend..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 https://frontend-sandy-seven-n9m6mrso9h.vercel.app/)
+          echo "Vercel Frontend Status: $HTTP_STATUS"
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "Warning: Expected 200, got $HTTP_STATUS"
+          fi
